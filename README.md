@@ -35,7 +35,7 @@ Switch roles from the header to see the UI adapt in real time:
 | Role      | View | Export / Download | Bulk Actions | Delete | Add Invoice |
 |-----------|:----:|:------------------:|:------------:|:------:|:------------:|
 | Admin     | ✅   | ✅                  | ✅           | ✅     | ✅           |
-| Finance   | ✅   | ✅                  | ✅           | ❌     | ✅           |
+| Finance   | ✅   | ✅                  | ❌           | ❌     | ✅           |
 | Viewer    | ✅   | ❌                  | ❌           | ❌     | ❌           |
 
 ### 🎨 UI/UX
@@ -104,39 +104,6 @@ InvoiceManagement/
 ├─ vite.config.js
 └─ package.json
 ```
-
----
-
-## 🔄 Application Flow
-
-```mermaid
-flowchart TD
-    A[main.jsx] --> B[ThemeProvider]
-    B --> C[QueryClientProvider]
-    C --> D[AuthProvider]
-    D --> E[ToastProvider]
-    E --> F[BrowserRouter / App.jsx]
-    F --> G[AppLayout]
-    G --> H[Sidebar + Header]
-    G --> I[Routed Page]
-    I --> J[DashboardPage]
-    I --> K[InvoiceListPage]
-    I --> L[InvoiceDetailsPage]
-    J -->|useQuery| M[invoiceService.js]
-    K -->|useQuery + filters| M
-    L -->|useQuery by id| M
-    M --> N[client.js: simulateRequest]
-    N --> O[mockInvoices.js in-memory dataset]
-```
-
-**Provider order matters:** `ThemeProvider` sets the `dark` class on `<html>` before render, `QueryClientProvider` gives every page access to cached async state, `AuthProvider` exposes the active role's `permissions` object, and `ToastProvider` renders the notification stack used across mutations.
-
-### Data flow for a typical action (e.g. deleting an invoice)
-1. User clicks **Delete** → a `ConfirmDialog` opens (no action taken yet).
-2. On confirmation, a TanStack Query `useMutation` calls `deleteInvoices(ids)` in `invoiceService.js`.
-3. The service mutates the in-memory `MOCK_INVOICES` array and resolves via `simulateRequest` (simulated network delay).
-4. On success, the `['invoices']` and `['dashboard-stats']` query caches are invalidated so the table and dashboard refetch automatically, and a success/error toast is shown.
-
 ---
 
 ## 🚀 Getting Started
@@ -157,8 +124,6 @@ npm run build
 # preview the production build locally
 npm run preview
 ```
-
-> No environment variables or backend setup are required — the app runs entirely on mock, in-memory data.
 
 ---
 
@@ -186,9 +151,4 @@ Use **Add Invoice → Add Bulk Invoice** on the dashboard, or download the sampl
 
 ---
 
-## 🗺️ Roadmap Ideas
-- Swap `invoiceService.js` for real REST/GraphQL calls
-- Persist role/session via a real auth provider
-- Add automated tests (table performance, form handling, API layer)
-- PDF invoice generation instead of plain-text download
 

@@ -5,7 +5,7 @@ import BulkInvoiceModal from '../BulkInvoiceModal'
 import { useAuth } from '../../context/useAuth'
 
 export default function AddInvoiceButton() {
-  const { permissions } = useAuth()
+  const { role } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
   const [singleOpen, setSingleOpen] = useState(false)
   const [bulkOpen, setBulkOpen] = useState(false)
@@ -31,7 +31,7 @@ export default function AddInvoiceButton() {
     closeTimeoutRef.current = setTimeout(() => setMenuOpen(false), 150)
   }
 
-  if (!permissions.canEdit) return null
+  if (role !== 'admin') return null
 
   return (
     <>
